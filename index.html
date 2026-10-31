@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>erdetøltid.dk</title>
+    <meta name="description" content="Er det øltid?">
+    <link rel="canonical" href="https://xn--erdetltid-p8a.dk/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Er det øltid?">
+    <meta property="og:description" content="Find ud af det på erdetøltid.dk">
+    <meta property="og:url" content="https://xn--erdetltid-p8a.dk/">
+    <meta property="og:image" content="https://xn--erdetltid-p8a.dk/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="da_DK">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: "Trebuchet MS", "Franklin Gothic Medium", sans-serif;
+      }
+      #titel {
+        text-align: center;
+        top: 10%;
+        font-size: 40px;
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+      }
+      #svar {
+        text-align: center;
+        top: 27%;
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        font-size: 6px;
+      }
+      #del {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        font: inherit;
+        font-size: 16px;
+        padding: 8px 14px;
+        border: 1px solid #999;
+        border-radius: 6px;
+        background: #fff;
+        color: #333;
+        cursor: pointer;
+      }
+      #del:hover { background: #f2f2f2; }
+      #delmenu {
+        position: absolute;
+        right: 12px;
+        bottom: 52px;
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid #999;
+        border-radius: 6px;
+        background: #fff;
+      }
+      #delmenu.open { display: flex; }
+      #delmenu a, #delmenu button {
+        font: inherit;
+        font-size: 15px;
+        padding: 6px 10px;
+        border: 0;
+        border-radius: 4px;
+        background: #f2f2f2;
+        color: #333;
+        text-decoration: none;
+        text-align: left;
+        cursor: pointer;
+      }
+      #delmenu a:hover, #delmenu button:hover { background: #e4e4e4; }
+    </style>
+  </head>
+  <body>
+    <h1 id="titel">Er det øltid?</h1>
+    <h2 id="svar"><span>Ja</span></h2>
+
+    <div id="delmenu">
+      <button type="button" id="kopier">Kopiér link</button>
+      <a id="fb" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fxn--erdetltid-p8a.dk%2F" target="_blank" rel="noopener">Del på Facebook</a>
+    </div>
+    <button type="button" id="del">Del</button>
+
+    <script>
+      var URL_DEL = 'https://erdetøltid.dk/';
+      var TITEL = 'Er det øltid?';
+
+      var fontSize = 6;
+      function forstoer() {
+        var svar = document.getElementById('svar');
+        var oldFontSize = fontSize;
+        fontSize += 1.4 * Math.sqrt(fontSize);
+        var newWidth = svar.firstChild.offsetWidth / oldFontSize * fontSize;
+        if (newWidth < document.body.offsetWidth * 0.8 && fontSize < 344) {
+          svar.style.fontSize = Math.round(fontSize) + 'px';
+          svar.style.marginTop = (-fontSize / 3) + 'px';
+          setTimeout(forstoer, 30);
+        }
+      }
+      window.addEventListener('load', forstoer);
+
+      var del = document.getElementById('del');
+      var menu = document.getElementById('delmenu');
+      var kopier = document.getElementById('kopier');
+
+      del.addEventListener('click', function () {
+        if (navigator.share) {
+          navigator.share({ title: TITEL, text: TITEL, url: URL_DEL }).catch(function () {});
+          return;
+        }
+        menu.classList.toggle('open');
+      });
+
+      kopier.addEventListener('click', function () {
+        var done = function () {
+          kopier.textContent = 'Link kopieret';
+          setTimeout(function () {
+            kopier.textContent = 'Kopiér link';
+            menu.classList.remove('open');
+          }, 1500);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(URL_DEL).then(done, function () { window.prompt('Kopiér linket:', URL_DEL); });
+        } else {
+          window.prompt('Kopiér linket:', URL_DEL);
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target) && e.target !== del) menu.classList.remove('open');
+      });
+    </script>
+  </body>
+</html>
