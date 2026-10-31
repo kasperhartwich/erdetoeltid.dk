@@ -86,15 +86,16 @@
 
     <div id="delmenu">
       <button type="button" id="kopier">Kopiér link</button>
-      <a id="fb" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fxn--erdetltid-p8a.dk%2F" target="_blank" rel="noopener">Del på Facebook</a>
+      <a id="fb" href="#" target="_blank" rel="noopener">Del på Facebook</a>
     </div>
-    <button type="button" id="del">Del</button>
+    <button type="button" id="del" aria-haspopup="true" aria-expanded="false" aria-controls="delmenu">Del</button>
 
     <script>
-      var URL_DEL = 'https://erdetøltid.dk/';
+      var URL_DEL = document.querySelector('link[rel=canonical]').href;
       var TITEL = 'Er det øltid?';
 
       var fontSize = 6;
+      var startet = false;
       function forstoer() {
         var svar = document.getElementById('svar');
         var oldFontSize = fontSize;
@@ -106,37 +107,62 @@
           setTimeout(forstoer, 30);
         }
       }
-      window.addEventListener('load', forstoer);
+      function startForstoer() {
+        if (startet || document.hidden) return;
+        startet = true;
+        forstoer();
+      }
+      window.addEventListener('load', startForstoer);
+      document.addEventListener('visibilitychange', startForstoer);
 
       var del = document.getElementById('del');
       var menu = document.getElementById('delmenu');
       var kopier = document.getElementById('kopier');
+      var fb = document.getElementById('fb');
+
+      fb.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(URL_DEL);
+
+      function visMenu(open) {
+        menu.classList.toggle('open', open);
+        del.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
 
       del.addEventListener('click', function () {
         if (navigator.share) {
-          navigator.share({ title: TITEL, text: TITEL, url: URL_DEL }).catch(function () {});
+          navigator.share({ title: TITEL, text: TITEL, url: URL_DEL }).catch(function (err) {
+            if (!err || err.name !== 'AbortError') visMenu(true);
+          });
           return;
         }
-        menu.classList.toggle('open');
+        visMenu(!menu.classList.contains('open'));
       });
+
+      fb.addEventListener('click', function () { visMenu(false); });
 
       kopier.addEventListener('click', function () {
         var done = function () {
           kopier.textContent = 'Link kopieret';
           setTimeout(function () {
             kopier.textContent = 'Kopiér link';
-            menu.classList.remove('open');
+            visMenu(false);
           }, 1500);
         };
+        var fallback = function () { window.prompt('Kopiér linket:', URL_DEL); };
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(URL_DEL).then(done, function () { window.prompt('Kopiér linket:', URL_DEL); });
+          navigator.clipboard.writeText(URL_DEL).then(done, fallback);
         } else {
-          window.prompt('Kopiér linket:', URL_DEL);
+          fallback();
         }
       });
 
       document.addEventListener('click', function (e) {
-        if (!menu.contains(e.target) && e.target !== del) menu.classList.remove('open');
+        if (!menu.contains(e.target) && e.target !== del) visMenu(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('open')) {
+          visMenu(false);
+          del.focus();
+        }
       });
     </script>
   </body>

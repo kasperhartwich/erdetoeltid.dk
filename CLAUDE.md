@@ -16,13 +16,17 @@ GitHub Pages serves the `master` branch from the repo root, so a push to
 (`xn--erdetltid-p8a.dk` is `erdetøltid.dk`); GitHub reads it from the branch,
 so do not delete it. `.nojekyll` keeps Pages from running Jekyll.
 
+Known and accepted: the old `/index.php` URL returns a Pages 404. Pages cannot
+redirect server side, and a `.php` stub would be served as plain text.
+
 ## Files
 
 - `index.html`: the page. Inline CSS, an inline script that animates the
   answer growing from 6px until it fills about 80% of the viewport width
   (capped at 344px), and a "Del" (share) button: `navigator.share` where the
   browser has it, otherwise a small menu with "Kopiér link" and a Facebook
-  sharer link. No third-party scripts.
+  sharer link. The share URL is read from the canonical link, so the domain
+  is written once in the head. No third-party scripts.
 - `og.png`: the 1200x630 Open Graph image. It shows the question only, never
   the answer: a share must not spoil the joke. The `og:` meta tags in
   `index.html` use the punycode domain in absolute URLs.
