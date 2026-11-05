@@ -32,7 +32,7 @@ redirect server side, and a `.php` stub would be served as plain text.
   `index.html` use the punycode domain in absolute URLs.
 - `googlede3a3ec6610d67c4.html`: Google Search Console verification. Do not
   edit, rename or delete it.
-- `README.txt`: the site name only.
+- `README.md`: the short public readme, in Danish.
 
 ## Working on it
 
